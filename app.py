@@ -14,33 +14,46 @@ def sms_reply():
     """Respond to incoming calls with a simple text message."""
     # Fetch the message
     msg = request.form.get('Body')
-
-    page = requests.get('https://www.linkedin.com/jobs/search/?keywords=intern&location=Bengaluru%2C%20Karnataka%2C%20India')
-    soup = BeautifulSoup(page.content, features="lxml")
-    openings = soup.find_all("a", class_="result-card__full-card-link")
-    if len(openings) > 10:
-        openings = openings[:10]
-
-    for x in openings:
-        links = x["href"]
-        openings_page = requests.get(links)
-        openings_soup = BeautifulSoup(openings_page.content, features="lxml")
-        job_title = openings_soup.find("h1", class_="topcard__title").text
-        job_location = openings_soup.find("span", class_="topcard__flavor topcard__flavor--bullet").text
-        company_title = openings_soup.find("a", class_="topcard__org-name-link").text
-        job_description = openings_soup.find("div", class_="description__text description__text--rich")
-        print(job_title, ', ', company_title, ', ', job_location)
-        apply_link = openings_soup.find("a", class_="apply-button apply-button--link")
-        if apply_link:
-            apply_link = apply_link["href"]
-        print(apply_link)
-        # print("Description:\n", job_description.text)
-        print("--------------------------------------------------------------------------")
+    message_list = msg.split(" ")
     
-    # Create reply
     resp = MessagingResponse()
-    resp.message("You said: {}".format(msg))
 
+    if len(message_list) != 3:
+        resp.message("Incorrect format.")
+        return str(resp)
+    
+    if message_list[0] == "search":
+        page = requests.get('https://www.linkedin.com/jobs/search/?keywords=' + message_list[1] + '&location=' + message_list[1])
+        soup = BeautifulSoup(page.content, features="lxml")
+        openings = soup.find_all("a", class_="result-card__full-card-link")
+        if len(openings) > 10:
+            openings = openings[:10]
+        resp_message = ""
+        for x in openings:
+            temp = ""
+            links = x["href"]
+            openings_page = requests.get(links)
+            openings_soup = BeautifulSoup(openings_page.content, features="lxml")
+            job_title = openings_soup.find("h1", class_="topcard__title")
+            if job_title:
+                temp += "Job Title: " + job_title.text + "\n"
+            job_location = openings_soup.find("span", class_="topcard__flavor topcard__flavor--bullet")
+            if job_location:
+                temp += "Location: " + job_location.text + "\n"
+            company_title = openings_soup.find("a", class_="topcard__org-name-link")
+            if company_title:
+                temp += "Company: " + company_title.text + "\n"
+            job_description = openings_soup.find("div", class_="description__text description__text--rich")
+            if job_description:
+                temp += "Description:\n" + job_description + "\n"
+            apply_link = openings_soup.find("a", class_="apply-button apply-button--link")
+            if apply_link:
+                apply_link = apply_link["href"]
+                temp += "Apply Link:\n" + apply_link + "\n"
+            resp_message += temp
+        resp.message(resp_message)
+    else:
+        resp.message("Other functions not implented.")
     return str(resp)
 
 if __name__ == "__main__":

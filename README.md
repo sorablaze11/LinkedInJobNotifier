@@ -1,1 +1,1 @@
-# LinkedInJobNotifier:office:
+# :office: LinkedInJobNotifier

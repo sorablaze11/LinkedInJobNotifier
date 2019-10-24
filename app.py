@@ -53,7 +53,7 @@ def sms_reply():
             resp_message += temp
         resp.message(resp_message)
     else:
-        resp.message("Other functions not implented.")
+        resp.message("Other functions not implemented.")
     return str(resp)
 
 if __name__ == "__main__":

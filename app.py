@@ -14,7 +14,7 @@ def sms_reply():
     """Respond to incoming calls with a simple text message."""
     # Fetch the message
     msg = request.form.get('Body')
-    message_list = msg.split(" ")
+    message_list = msg.split("@")
     
     resp = MessagingResponse()
 
@@ -23,11 +23,12 @@ def sms_reply():
         return str(resp)
     
     if message_list[0] == "search":
-        page = requests.get('https://www.linkedin.com/jobs/search/?keywords=' + message_list[1] + '&location=' + message_list[1])
+        page = requests.get('https://www.linkedin.com/jobs/search/?keywords=' + message_list[1] + '&location=' + message_list[2])
+        print(page)
         soup = BeautifulSoup(page.content, features="lxml")
         openings = soup.find_all("a", class_="result-card__full-card-link")
-        if len(openings) > 10:
-            openings = openings[:10]
+        if len(openings) > 5:
+            openings = openings[:5]
         resp_message = ""
         for x in openings:
             temp = ""
@@ -45,12 +46,14 @@ def sms_reply():
                 temp += "Company: " + company_title.text + "\n"
             job_description = openings_soup.find("div", class_="description__text description__text--rich")
             if job_description:
-                temp += "Description:\n" + job_description + "\n"
+                # temp += "Description:\n" + job_description.text + "\n"
+                pass
             apply_link = openings_soup.find("a", class_="apply-button apply-button--link")
             if apply_link:
                 apply_link = apply_link["href"]
-                temp += "Apply Link:\n" + apply_link + "\n"
-            resp_message += temp
+                # temp += "Apply Link:\n" + apply_link + "\n"
+            resp_message += temp + "\n"
+            print(resp_message)
         resp.message(resp_message)
     else:
         resp.message("Other functions not implemented.")

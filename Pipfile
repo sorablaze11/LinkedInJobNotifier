@@ -6,6 +6,11 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+beautifulsoup4 = "==4.8.1"
+lxml = "==4.4.1"
+twilio = "==6.32.0"
+gunicorn = "==19.7.1"
+Flask = "==1.1.1"
 
 [requires]
 python_version = "3.6"

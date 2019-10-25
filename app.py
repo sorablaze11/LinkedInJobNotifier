@@ -52,7 +52,7 @@ def sms_reply():
                 apply_link = apply_link["href"]
                 # temp += "Apply Link:\n" + apply_link + "\n"
             resp_message += temp + "\n"
-            print(resp_message)
+            # print(resp_message)
         resp.message(resp_message)
     else:
         resp.message("Other functions not implemented.")

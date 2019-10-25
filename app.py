@@ -14,7 +14,7 @@ def sms_reply():
     """Respond to incoming calls with a simple text message."""
     # Fetch the message
     msg = request.form.get('Body')
-    message_list = msg.split("@")
+    message_list = msg.split(" ")
     
     resp = MessagingResponse()
 
@@ -24,7 +24,6 @@ def sms_reply():
     
     if message_list[0] == "search":
         page = requests.get('https://www.linkedin.com/jobs/search/?keywords=' + message_list[1] + '&location=' + message_list[2])
-        print(page)
         soup = BeautifulSoup(page.content, features="lxml")
         openings = soup.find_all("a", class_="result-card__full-card-link")
         if len(openings) > 5:
